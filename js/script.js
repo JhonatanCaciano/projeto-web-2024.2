@@ -107,11 +107,11 @@ function buscarDados() {
         .catch(error => console.error("Erro ao buscar dados:", error));
 }
 
-// Função para converter valores numéricos corretamente
+// Converter valores
 function converterValor(valor) {
     let numero = parseFloat(valor);
     
-    // Se for um número muito alto, assumimos que está multiplicado por 100 e ajustamos
+    // Se for um número > 1000
     if (numero > 1000 && Number.isInteger(numero)) {
         return numero / 100;
     }
@@ -120,7 +120,7 @@ function converterValor(valor) {
 }
 
 
-// Função para calcular estatísticas
+// Calcular estatísticas
 function calcularEstatisticas(salarios) {
     if (salarios.length === 0) {
         document.getElementById("salario-medio").textContent = "R$ 0,00";
