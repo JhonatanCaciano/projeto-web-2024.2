@@ -70,6 +70,20 @@ th {
     color: white;
 }
 
+#estatisticas {
+    margin-top: 20px;
+    background: #eee;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#estatisticas h3 {
+    margin-bottom: 10px;
+    color: #0044cc;
+}
+
+
 footer {
     background: #333;
     color: white;

@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarDados() {
     try {
-        // Carregar os dados do JSON
         const response = await fetch("js/detalhamentopessoal.json");
         const jsonData = await response.json();
 
@@ -12,22 +11,12 @@ async function carregarDados() {
         const filtroCargo = document.getElementById("cargo");
         const filtroSetor = document.getElementById("setor");
 
-        // Conjuntos para armazenar cargos e setores únicos
         const cargos = new Set();
         const setores = new Set();
 
-        // Limpar a tabela antes de inserir novos dados
         tabela.innerHTML = "";
 
         jsonData.data.forEach(item => {
-            // Função para converter valores corretamente para número
-            function converterValor(valor) {
-                if (typeof valor === "string") {
-                    return parseFloat(valor.replace(",", "."));
-                }
-                return parseFloat(valor) || 0;
-            }
-
             const proventos = converterValor(item["Proventos"]);
             const descontos = converterValor(item["Descontos"]);
             const liquido = converterValor(item["Líquido"]);
@@ -44,15 +33,14 @@ async function carregarDados() {
                     <td>${item["Cargo"]}</td>
                     <td>${item["Setor"]}</td>
                     <td>${item["Matricula"]}</td>
-                    <td>R$ ${proventos.toFixed(2)}</td>
-                    <td>R$ ${descontos.toFixed(2)}</td>
-                    <td>R$ ${liquido.toFixed(2)}</td>
+                    <td>R$ ${proventos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td>R$ ${descontos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td>R$ ${liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                 </tr>
             `;
             tabela.innerHTML += linha;
         });
 
-        // Preencher os selects com os cargos e setores únicos
         filtroCargo.innerHTML = `<option value="">Todos</option>`;
         filtroSetor.innerHTML = `<option value="">Todos</option>`;
 
@@ -69,7 +57,6 @@ async function carregarDados() {
     }
 }
 
-// Função para buscar e filtrar os dados
 function buscarDados() {
     const nomeBusca = document.getElementById("searchBar").value.toLowerCase();
     const cargoSelecionado = document.getElementById("cargo").value;
@@ -79,7 +66,7 @@ function buscarDados() {
         .then(response => response.json())
         .then(jsonData => {
             const tabela = document.getElementById("tabela-dados");
-            tabela.innerHTML = ""; // Limpa a tabela antes de inserir os novos resultados
+            tabela.innerHTML = "";
 
             const dadosFiltrados = jsonData.data.filter(item => {
                 return (
@@ -89,10 +76,14 @@ function buscarDados() {
                 );
             });
 
+            let salarios = [];
+
             dadosFiltrados.forEach(item => {
                 const proventos = converterValor(item["Proventos"]);
                 const descontos = converterValor(item["Descontos"]);
                 const liquido = converterValor(item["Líquido"]);
+
+                salarios.push(liquido);
 
                 const linha = `
                     <tr>
@@ -103,21 +94,46 @@ function buscarDados() {
                         <td>${item["Cargo"]}</td>
                         <td>${item["Setor"]}</td>
                         <td>${item["Matricula"]}</td>
-                        <td>R$ ${proventos.toFixed(2)}</td>
-                        <td>R$ ${descontos.toFixed(2)}</td>
-                        <td>R$ ${liquido.toFixed(2)}</td>
+                        <td>R$ ${proventos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                        <td>R$ ${descontos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                        <td>R$ ${liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                     </tr>
                 `;
                 tabela.innerHTML += linha;
             });
+
+            calcularEstatisticas(salarios);
         })
         .catch(error => console.error("Erro ao buscar dados:", error));
 }
 
-// Função auxiliar para converter valores
+// Função para converter valores numéricos corretamente
 function converterValor(valor) {
-    if (typeof valor === "string") {
-        return parseFloat(valor.replace(",", "."));
+    let numero = parseFloat(valor);
+    
+    // Se for um número muito alto, assumimos que está multiplicado por 100 e ajustamos
+    if (numero > 1000 && Number.isInteger(numero)) {
+        return numero / 100;
     }
-    return parseFloat(valor) || 0;
+    
+    return numero;
+}
+
+
+// Função para calcular estatísticas
+function calcularEstatisticas(salarios) {
+    if (salarios.length === 0) {
+        document.getElementById("salario-medio").textContent = "R$ 0,00";
+        document.getElementById("salario-maximo").textContent = "R$ 0,00";
+        document.getElementById("salario-minimo").textContent = "R$ 0,00";
+        return;
+    }
+
+    const salarioMedio = salarios.reduce((acc, val) => acc + val, 0) / salarios.length;
+    const salarioMaximo = Math.max(...salarios);
+    const salarioMinimo = Math.min(...salarios);
+
+    document.getElementById("salario-medio").textContent = `R$ ${salarioMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("salario-maximo").textContent = `R$ ${salarioMaximo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    document.getElementById("salario-minimo").textContent = `R$ ${salarioMinimo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 }
