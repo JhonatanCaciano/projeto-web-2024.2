@@ -1,13 +1,5 @@
 @charset "UTF-8";
 
-/*
-Azul Primário (Cabeçalho, Botões, Títulos da Tabela): #0044cc
-Azul Escuro (Hover do Botão): #0033aa
-Cinza Claro (Fundo da Página): #f4f4f4
-Branco (Fundo da Tabela e Texto do Botão): #ffffff
-Cinza Médio (Bordas da Tabela e Inputs): #ccc
-*/
-
 body {
     font-family: Arial, sans-serif;
     margin: 0px;
@@ -16,7 +8,11 @@ body {
 }
 
 header {
-    background: #0044cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    background: linear-gradient(to right, #f7c202,#239470, #d49e32);  
     color: white;
     padding: 15px;
     text-align: center;
@@ -42,7 +38,7 @@ main {
 
 #search button {
     padding: 8px 15px;
-    background: #0044cc;
+    background: #239470;
     color: white;
     border: none;
     border-radius: 4px;
@@ -50,7 +46,7 @@ main {
 }
 
 #search button:hover {
-    background: #0033aa;
+    background: #036043;
 }
 
 table {
@@ -66,7 +62,7 @@ th, td {
 }
 
 th {
-    background: #0044cc;
+    background: #239470;
     color: white;
 }
 
@@ -80,12 +76,12 @@ th {
 
 #estatisticas h3 {
     margin-bottom: 10px;
-    color: #0044cc;
+    color: #239470;
 }
 
 
 footer {
-    background: #333;
+    background: #239470;
     color: white;
     text-align: center;
     padding: 10px;

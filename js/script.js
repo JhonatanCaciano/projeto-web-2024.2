@@ -1,6 +1,6 @@
 let dadosFuncionarios = [];
 
-const URL_JSON = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/main/js/detalhamentopessoal.json";
+const URL_JSON = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/refs/heads/main/js/detalhamentopessoal.json";
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarDados();
@@ -19,13 +19,13 @@ async function carregarDados() {
 
     } catch (error) {
         console.error("Erro ao carregar os dados:", error);
-        alert("Não foi possível carregar os dados. Verifique a URL ou as permissões CORS.");
+        alert("Não foi possível carregar os dados. Verifique a URL.");
     }
 }
 
 function preencherTabela(dados) {
     const tabela = document.getElementById("tabela-dados");
-    tabela.innerHTML = ""; a
+    tabela.innerHTML = "";
 
     dados.forEach(item => {
         const proventos = converterValor(item["Proventos"]);
