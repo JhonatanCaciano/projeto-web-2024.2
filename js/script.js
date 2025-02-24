@@ -25,7 +25,7 @@ async function carregarDados() {
 
 function preencherTabela(dados) {
     const tabela = document.getElementById("tabela-dados");
-    tabela.innerHTML = ""; a
+    tabela.innerHTML = "";
 
     dados.forEach(item => {
         const proventos = converterValor(item["Proventos"]);
