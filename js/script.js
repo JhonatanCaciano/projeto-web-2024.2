@@ -1,6 +1,5 @@
 let dadosFuncionarios = [];
 
-// URL do JSON
 const URL_JSON = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/main/js/detalhamentopessoal.json";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,7 +12,7 @@ async function carregarDados() {
         if (!response.ok) throw new Error("Erro ao carregar o JSON.");
 
         const jsonData = await response.json();
-        dadosFuncionarios = jsonData.data; // Armazenar dados no array
+        dadosFuncionarios = jsonData.data; 
 
         preencherTabela(dadosFuncionarios);
         preencherFiltros(dadosFuncionarios);
@@ -26,7 +25,7 @@ async function carregarDados() {
 
 function preencherTabela(dados) {
     const tabela = document.getElementById("tabela-dados");
-    tabela.innerHTML = ""; // Limpar a tabela
+    tabela.innerHTML = ""; a
 
     dados.forEach(item => {
         const proventos = converterValor(item["Proventos"]);
