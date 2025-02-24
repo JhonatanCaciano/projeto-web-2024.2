@@ -1,6 +1,6 @@
 let dadosFuncionarios = [];
 
-const URL_JSON = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/refs/heads/main/js/detalhamentopessoal.json";
+const URL_CSV = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/refs/heads/main/js/detalhamentopessoal.csv";
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarDados();
@@ -8,24 +8,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarDados() {
     try {
-        const response = await fetch(URL_JSON, { mode: 'cors' });
-        if (!response.ok) throw new Error("Erro ao carregar o JSON.");
+        const response = await fetch(URL_CSV, { mode: 'cors' });
+        if (!response.ok) throw new Error("Erro ao carregar o CSV.");
 
-        const jsonData = await response.json();
-        dadosFuncionarios = jsonData.data.map(item => ({
-            ...item,
-            "Proventos": converterValor(item["Proventos"]),
-            "Descontos": converterValor(item["Descontos"]),
-            "Líquido": converterValor(item["Líquido"])
-        }));
+        const csvText = await response.text();
+        dadosFuncionarios = csvParaArray(csvText);
 
         preencherTabela(dadosFuncionarios);
         preencherFiltros(dadosFuncionarios);
 
     } catch (error) {
         console.error("Erro ao carregar os dados:", error);
-        alert("Não foi possível carregar os dados do JSON. Verifique a URL.");
+        alert("Não foi possível carregar os dados do CSV. Verifique a URL.");
     }
+}
+
+function csvParaArray(csv) {
+    const linhas = csv.trim().split("\n");
+    const cabecalhos = linhas[0].split(",").map(header => header.trim().replace(/^"|"$/g, ""));
+
+    return linhas.slice(1).map(linha => {
+        const valores = linha.match(/("[^"]*"|[^,]+)/g).map(valor => valor.trim().replace(/^"|"$/g, ""));
+        const obj = {};
+
+        cabecalhos.forEach((chave, index) => {
+            obj[chave] = valores[index] || "";
+        });
+
+        return obj;
+    });
 }
 
 function preencherTabela(dados) {
@@ -33,6 +44,10 @@ function preencherTabela(dados) {
     tabela.innerHTML = "";
 
     dados.forEach(item => {
+        const proventos = converterValor(item["Proventos"]);
+        const descontos = converterValor(item["Descontos"]);
+        const liquido = converterValor(item["Líquido"]);
+
         const linha = `
             <tr>
                 <td>${item["Nome do funcionário"]}</td>
@@ -42,15 +57,15 @@ function preencherTabela(dados) {
                 <td>${item["Cargo"]}</td>
                 <td>${item["Setor"]}</td>
                 <td>${item["Matricula"]}</td>
-                <td>R$ ${item["Proventos"].toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                <td>R$ ${item["Descontos"].toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                <td>R$ ${item["Líquido"].toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                <td>R$ ${proventos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                <td>R$ ${descontos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                <td>R$ ${liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
             </tr>
         `;
         tabela.innerHTML += linha;
     });
 
-    calcularEstatisticas(dados.map(item => item["Líquido"]));
+    calcularEstatisticas(dados.map(item => converterValor(item["Líquido"])));
 }
 
 function preencherFiltros(dados) {
@@ -91,11 +106,8 @@ function buscarDados() {
 function converterValor(valor) {
     if (!valor) return 0;
 
-    let numero = parseFloat(valor);
-
-    if (Number.isInteger(numero) && numero > 1000) {
-        numero = numero / 100;
-    }
+    const numeroCorrigido = valor.replace(/\.(?=\d{3}(,|$))/g, "").replace(",", ".");
+    const numero = parseFloat(numeroCorrigido);
 
     return isNaN(numero) ? 0 : numero;
 }
