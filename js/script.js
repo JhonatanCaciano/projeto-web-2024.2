@@ -1,12 +1,17 @@
 let dadosFuncionarios = [];
 
+// URL do JSON
+const URL_JSON = "https://raw.githubusercontent.com/JhonatanCaciano/projeto-web-2024.2/main/js/detalhamentopessoal.json";
+
 document.addEventListener("DOMContentLoaded", () => {
     carregarDados();
 });
 
 async function carregarDados() {
     try {
-        const response = await fetch("js/detalhamentopessoal.json");
+        const response = await fetch(URL_JSON, { mode: 'cors' });
+        if (!response.ok) throw new Error("Erro ao carregar o JSON.");
+
         const jsonData = await response.json();
         dadosFuncionarios = jsonData.data; // Armazenar dados no array
 
@@ -15,12 +20,13 @@ async function carregarDados() {
 
     } catch (error) {
         console.error("Erro ao carregar os dados:", error);
+        alert("Não foi possível carregar os dados. Verifique a URL ou as permissões CORS.");
     }
 }
 
 function preencherTabela(dados) {
     const tabela = document.getElementById("tabela-dados");
-    tabela.innerHTML = ""; // Limpar a tabela antes de preencher novamente
+    tabela.innerHTML = ""; // Limpar a tabela
 
     dados.forEach(item => {
         const proventos = converterValor(item["Proventos"]);
@@ -84,10 +90,7 @@ function buscarDados() {
 
 function converterValor(valor) {
     let numero = parseFloat(valor);
-    if (numero > 1000 && Number.isInteger(numero)) {
-        return numero / 100;
-    }
-    return numero;
+    return isNaN(numero) ? 0 : numero;
 }
 
 function calcularEstatisticas(salarios) {
